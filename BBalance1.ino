@@ -162,10 +162,10 @@ void setup() {
   Serial.println("Connecting...");
   Esp.doConnect(WiFi, Auth);
 
-  S.attach(10, 700, 2300);
-  S.writeMicroseconds(1500);
+//  S.attach(10, 700, 2300);
+//  S.writeMicroseconds(1500);
   
-  i = 0;
+  i = 0;  // set to one to not wait for wifi
   while (i == 0)
   {
     i = Esp.isConnected();
@@ -175,7 +175,17 @@ void setup() {
         Serial.println("Transparent Mode");
     }
   }
+
+  // Prime the pump
+  for (i=0;i<50;i++)
+  {
+    angle = getAngle(1);
+    adjusted = -PID(angle, 0);
+    delay(10);
+  }
+  Serial.println(angle);
   
+  // Output headings for use with Excel
   Serial.println("Accel, Gyro, Angle, PID");
 }
 
@@ -201,7 +211,7 @@ void loop() {
     Serial.print(aa);Serial.print(", ");Serial.print(ga);Serial.print(", ");Serial.print(angle);
     Serial.print(", ");Serial.println(adjusted);
     t = tm + 250;
-    S.writeMicroseconds(1500+Input*10);
+//    S.writeMicroseconds(1500+Input*10);
     doInterface();
   }
 
@@ -238,6 +248,5 @@ void doInit()
   TCNT3 = 0;
   TIMSK3 |= (1 << OCIE1A);
   OCR3A = 40;
-
 }
 
